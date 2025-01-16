@@ -23,3 +23,9 @@ def generate_2d_triangular(grid_size, a):
     ''' Shift every other row by half of the lattice constant '''
     x[1::2] += a / 2
     return x, y
+
+""" 2D Hexagonal """
+def generate_2d_hexagonal(grid_size, a):
+    x, y = generate_2d_triangular(grid_size, a)
+    y *= np.sqrt(3) / 2 #Scale for hex geometry
+    return x, y
