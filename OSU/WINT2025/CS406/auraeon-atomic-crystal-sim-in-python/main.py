@@ -55,12 +55,9 @@ def main():
             )
 
 
-    tk.Button(root, text="Simple Cubic",
-              command=lambda: generate_and_plot("sc")).pack(pady=5)
-    tk.Button(root, text="Triangular",
-              command=lambda: generate_and_plot("tri")).pack(pady=5)
-    tk.Button(root, text="Hexagonal",
-              command=lambda: generate_and_plot("hex")).pack(pady=5)
+    tk.Button(root, text="Simple Cubic", command=lambda: generate_and_plot("sc")).pack(pady=5)
+    tk.Button(root, text="Triangular", command=lambda: generate_and_plot("tri")).pack(pady=5)
+    tk.Button(root, text="Hexagonal", command=lambda: generate_and_plot("hex")).pack(pady=5)
     tk.Button(root, text="3D Simple Cubic", command=lambda: generate_and_plot("3d_sc")).pack(pady=5)
     tk.Button(root, text="3D BCC", command=lambda: generate_and_plot("3d_bcc")).pack(pady=5)
     tk.Button(root, text="3D FCC", command=lambda: generate_and_plot("3d_fcc")).pack(pady=5)
