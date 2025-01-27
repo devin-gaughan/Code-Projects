@@ -3,7 +3,7 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 
 def plot_2d_lattice(x, y, title="2D Lattice"):
-    """ plots a 2D lattice using a scatter plot in matplotlib """
+    # plots a 2D lattice using a scatter plot in matplotlib 
     plt.figure(figsize=(6, 6))
     plt.scatter(x, y, c='blue', s=50)
     plt.title(title)
@@ -13,6 +13,7 @@ def plot_2d_lattice(x, y, title="2D Lattice"):
     plt.show()
     
 def plot_3d_lattice(x, y, z, title="3D Lattice"):
+    # plots a 3D lattice using a scatter plot in matplotlib 
     import matplotlib.pyplot as plt
     fig = plt.figure(figsize=(7, 5))
     ax = fig.add_subplot(111, projection='3d')

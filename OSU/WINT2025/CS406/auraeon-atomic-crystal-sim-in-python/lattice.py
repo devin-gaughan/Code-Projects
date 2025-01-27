@@ -1,7 +1,7 @@
 import numpy as np
 
-""" 2D GENERATORS """
-""" 2D Simple Cubic """
+# 2D GENERATORS 
+# 2D Simple Cubic 
 def generate_2d_simple_cubic(grid_size, a):
     """ Generate (x, y) points for a 2D simple cubic lattice. 
     grid_size: number of atoms along one axis
@@ -14,7 +14,7 @@ def generate_2d_simple_cubic(grid_size, a):
     return x, y
 
 
-""" 2D Triangular """
+# 2D Triangular 
 def generate_2d_triangular(grid_size, a):
     """ Generate (x, y) points for a 2D triangular lattice. """
     x, y = np.meshgrid(
@@ -25,14 +25,14 @@ def generate_2d_triangular(grid_size, a):
     x[1::2] += a / 2
     return x, y
 
-""" 2D Hexagonal """
+# 2D Hexagonal 
 def generate_2d_hexagonal(grid_size, a):
     x, y = generate_2d_triangular(grid_size, a)
     y *= np.sqrt(3) / 2 #Scale for hex geometry
     return x, y
 
-""" 3D GENERATORS """
-""" 3D Simple Cubic """
+# 3D GENERATORS 
+# 3D Simple Cubic 
 def generate_3d_simple_cubic(grid_size, a):
     import numpy as np
     x_vals = np.arange(0, grid_size * a, a)
@@ -41,7 +41,7 @@ def generate_3d_simple_cubic(grid_size, a):
     x, y, z = np.meshgrid(x_vals, y_vals, z_vals)
     return x, y, z
 
-""" 3D BCC """
+# 3D BCC 
 def generate_bcc(grid_size, a):
     x, y, z = generate_3d_simple_cubic(grid_size, a)
     x_bcc = x + a / 2
@@ -49,7 +49,7 @@ def generate_bcc(grid_size, a):
     z_bcc = z + a / 2
     return (x, y, z), (x_bcc, y_bcc, z_bcc)
 
-""" 3D FCC """
+# 3D FCC 
 def generate_fcc(grid_size, a):
     x, y, z = generate_3d_simple_cubic(grid_size, a)
     ''' Offsets for face centers '''
