@@ -1,6 +1,6 @@
 # Code-Projects
 
-# Crystal Lattice Simulator v0.2.0
+# Crystal Lattice Simulator v0.2.1
 
 ## Overview
 
