@@ -1,12 +1,14 @@
-# Auraeon - Crystal Lattice Simulator v0.2.1
+# Auraeon - Crystal Lattice Simulator v0.2.4
 
 ## Overview
 
-The **Auraeon Crystal Lattice Simulator** is a Python-based program designed to generate and visualize 2D and 3D crystal lattices. With version **v0.2.1**, the simulator introduces enhanced features for element selection and customization, allowing users to:
+The **Auraeon Crystal Lattice Simulator** is a Python-based program designed to generate and visualize 2D and 3D crystal lattices. With version **v0.2.4**, the simulator features a refined GUI, improved visualization, and full support for multi-element plotting, allowing users to:
 
 - **Select Elements**: Choose from a dropdown of elements, each with unique colors, atomic radii, and other properties.
 - **Pick Colors**: Use a color picker to customize the display color of the selected element.
-- **Visualize Lattices**: Render 2D (Simple Cubic, Triangular, Hexagonal) and 3D (Simple Cubic, BCC, FCC) lattices in separate Matplotlib windows.
+- **Visualize Lattices**: Render 2D (Simple Cubic, Triangular, Hexagonal) and 3D (Simple Cubic, BCC, FCC) lattices in Matplotlib plots.
+- **Improved UI**: Modernized button layouts and better spacing for usability.
+- **Legends Outside the Plot**: Prevents overlap and ensures a clear view of lattice structures.
 
 **GitHub Repository Location:**  
 [https://github.com/devin-gaughan/Code-Projects/tree/master/OSU/WINT2025/CS406/auraeon-atomic-crystal-sim-in-python](https://github.com/devin-gaughan/Code-Projects/tree/master/OSU/WINT2025/CS406/auraeon-atomic-crystal-sim-in-python)
@@ -39,6 +41,12 @@ The **Auraeon Crystal Lattice Simulator** is a Python-based program designed to 
   - Body-Centered Cubic (BCC)
   - Face-Centered Cubic (FCC)
 
+### Improved Visualization
+
+- **Legend Placement**: Legends now appear **outside the plot** to avoid overlap.
+- **Dynamic Figure Scaling**: The GUI ensures that the plot window resizes to accommodate legends without distortion.
+- **Single Window Behavior**: Closing a 2D or 3D plot allows new plots to open correctly without conflicts.
+
 ---
 
 ## Getting Started
@@ -53,11 +61,12 @@ The **Auraeon Crystal Lattice Simulator** is a Python-based program designed to 
 - `numpy`
 - `matplotlib`
 - `tkinter` (usually included with Python installations)
+- `pyvista` (for potential future 3D enhancements)
 
 You can install dependencies with:
 
 ```bash
-pip install numpy matplotlib
+pip install -r requirements.txt
 ```
 
 ### Installation & Running
@@ -93,26 +102,25 @@ When you click "3D BCC," for example, the program:
 
 ---
 
-## Project Status (v0.2.1)
+## Project Status (v0.2.4)
 
-### Completed in v0.2.1
+### Completed in v0.2.4
 
-- Added an element selection dropdown.
-- Introduced a color picker for element customization.
-- Updated the visualization pipeline to handle dynamic colors and marker sizes.
+- **Refined GUI Layout**: Buttons now align properly for a cleaner look.
+- **Legend Fixes**: Legends are now placed outside the plots to avoid overlap.
+- **Improved Multi-Element Support**: Corrected handling of multiple elements in BCC/FCC.
 
-### What’s Next (v0.2.2)
+### What’s Next (v0.3.0)
 
-- **Legend Support**: Add legends to plots showing selected elements and their colors.
-- **Multi-Element Support**: Enable users to assign different elements to sub-lattices (e.g., corner vs. center atoms in BCC).
-- **Save/Restore Colors**: Implement saving of custom colors to a JSON file for persistence between sessions.
-- **Embedded Matplotlib**: Start transitioning to embedded Matplotlib plots for a unified UI.
+- **Sliders for Grid Size & Lattice Constant**: Users will be able to adjust lattice parameters dynamically.
+- **Embedded Matplotlib for a Unified UI**: Instead of separate windows, plots will be embedded in the main application.
+- **Optimized Rendering for Larger Lattices**: Improving performance for larger lattice structures.
 
 ---
 
 ## Contributing
 
-This project is in a learning/demo phase. Contributions or suggestions are welcome, but features like multi-element lattices, embedded plots, and advanced property calculations are already planned for future versions.
+This project is in a learning/demo phase. Contributions or suggestions are welcome, but features like support for molecules (in addition to individual atoms), advanced atomic and molecular property calculations, and calculations for electron conductivity and magnetic properties are already planned for future versions.
 
 ---
 

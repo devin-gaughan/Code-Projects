@@ -1,163 +1,98 @@
 import tkinter as tk
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 from tkinter import ttk, colorchooser
 from elements import ELEMENT_DATA
 from lattice import (
-    generate_2d_simple_cubic,
-    generate_2d_triangular,
-    generate_2d_hexagonal,
-    generate_3d_simple_cubic,
-    generate_bcc,
-    generate_fcc
+    generate_2d_simple_cubic, generate_2d_triangular, generate_2d_hexagonal,
+    generate_3d_simple_cubic, generate_bcc, generate_fcc
 )
 from visualization import plot_2d_lattice, plot_3d_lattice
 
-# The main function to create the GUI
+# Main function to create the GUI
 def main():
     root = tk.Tk()
-    root.title("Auraeon - Crystal Lattice Simulator v0.2.1")
+    root.title("Auraeon - Crystal Lattice Simulator v0.2.4")
+    root.geometry("600x500")  # Set default window size
 
-    # A Tk variable to store the selected element
+    # Apply a theme for modern styling
+    style = ttk.Style()
+    style.configure("TButton", font=("Arial", 12), padding=8)
+    
+    # Default elements for selection
     selected_element_1 = tk.StringVar(value="Fe")
     selected_element_2 = tk.StringVar(value="C")
-    
-    # The combobox to select an element
-    tk.Label(root, text="Select Element 1 (Example: Corner Atoms):").pack(pady=5)
-    element_combo_1 = ttk.Combobox(root, textvariable=selected_element_1, values=list(ELEMENT_DATA.keys()))
-    element_combo_1.pack(pady=5)
-    
-    tk.Label(root, text="Select Element 2 (Example: Center Atoms):").pack(pady=5)
-    element_combo_2 = ttk.Combobox(root, textvariable=selected_element_2, values=list(ELEMENT_DATA.keys()))
-    element_combo_2.pack(pady=5)
-    
-    # Function to pick a color for an element
+
+    # **Frame for Element Selection
+    frame_selection = ttk.Frame(root, padding=10)
+    frame_selection.grid(row=0, column=0, columnspan=2, sticky="ew")
+
+    # Element selection dropdowns
+    ttk.Label(frame_selection, text="Select Element 1 (Corners):").grid(row=0, column=0, sticky="w", padx=10, pady=5)
+    element_combo_1 = ttk.Combobox(frame_selection, textvariable=selected_element_1, values=list(ELEMENT_DATA.keys()), width=12)
+    element_combo_1.grid(row=0, column=1, padx=10, pady=5)
+
+    ttk.Label(frame_selection, text="Select Element 2 (Centers/Faces):").grid(row=1, column=0, sticky="w", padx=10, pady=5)
+    element_combo_2 = ttk.Combobox(frame_selection, textvariable=selected_element_2, values=list(ELEMENT_DATA.keys()), width=12)
+    element_combo_2.grid(row=1, column=1, padx=10, pady=5)
+
+    # **Function for Color Picker**
     def pick_color(element_var):
-        # Opens the color picker dialog and updates the color for the selected element
+        """Allows user to select a color for a given element variable."""
         element = element_var.get()
         initial_color = ELEMENT_DATA[element]["color"]
-        chosen_color = colorchooser.askcolor(color=initial_color, title=f"Pick a color for {element}")
-        if chosen_color[1]: # If a color was chosen
+        chosen_color = colorchooser.askcolor(color=initial_color, title=f"Pick color for {element}")
+
+        # Updates the color if a new one was chosen
+        if chosen_color[1]:
             ELEMENT_DATA[element]["color"] = chosen_color[1]
-            print(f"Updated color for {element} to {chosen_color[1]}") # Debug log
-    
-    # Function to generate and plot a multi element lattice        
-    def generate_and_plot_multi(lattice_type):
-        """ Generates a multi element lattice and plots it """
+            print(f"Updated color for {element} to {chosen_color[1]}")
+
+    # Frame for Color Selection
+    frame_colors = ttk.Frame(root, padding=10)
+    frame_colors.grid(row=1, column=0, columnspan=2, sticky="ew")
+
+    ttk.Button(frame_colors, text="Pick Color (Element 1)", command=lambda: pick_color(selected_element_1), width=18).grid(row=0, column=0, padx=5, pady=5)
+    ttk.Button(frame_colors, text="Pick Color (Element 2)", command=lambda: pick_color(selected_element_2), width=18).grid(row=0, column=1, padx=5, pady=5)
+
+    # Function to Generate Lattices
+    def generate_and_plot(lattice_type):
+        """Handles lattice generation and visualization."""
+        import numpy as np
         grid_size = 5
         a = 1.0
-        
-        # Get user-selected elements
-        element_1 = selected_element_1.get() # For sub-lattice A
-        element_2 = selected_element_2.get() # For sub-lattice B
-        
-        # Get their colors and radii
+        element_1 = selected_element_1.get()
+        element_2 = selected_element_2.get()
+
         color_1 = ELEMENT_DATA[element_1]["color"]
         color_2 = ELEMENT_DATA[element_2]["color"]
         radius_1 = ELEMENT_DATA[element_1]["radius"]
         radius_2 = ELEMENT_DATA[element_2]["radius"]
-        
-        fig = plt.figure(figsize=(7,5))
-        ax = fig.add_subplot(111, projection='3d')
-        
-        # Plot based on lattice type
-        if lattice_type == "3d_bcc":
-            # Corner atoms -> element 1, Center atoms -> element 2
-            (x_c, y_c, z_c), (x_b, y_b, z_b) = generate_bcc(grid_size, a)
-            
-            # Plot corner atoms (sub lattice A)
-            # REMOVED: This is now ax.scatter() instead of plot_3d_lattice()
-            # plot_3d_lattice(
-            #     x_c.ravel(), y_c.ravel(), z_c.ravel(),
-            #     title=f"3D BCC with {element_1} and {element_2}",
-            #     color=color_1, marker_size=radius_1 * 100
-            # )
-            ax.scatter(
-                x_c.ravel(), y_c.ravel(), z_c.ravel(),
-                c=color_1, s=radius_1 * 100, label=f"{element_1} ({color_1}) (Corners)"
-            )            
-            # # Plot center atoms (sub lattice B)
-            # REMOVED: This is now ax.scatter() instead of plot_3d_lattice()
-            # plot_3d_lattice(
-            #     x_b.ravel(), y_b.ravel(), z_b.ravel(),
-            #     title=f"3D BCC with {element_1} and {element_2}",
-            #     color=color_2, marker_size=radius_2 * 100
-            # )
-            ax.scatter(
-                x_b.ravel(), y_b.ravel(), z_b.ravel(),
-                c=color_2, s=radius_2 * 100, label=f"{element_2} ({color_2}) (Centers)"
-            )   
-        elif lattice_type == "3d_fcc":
-            # Corner atoms -> element 1, Face atoms -> element 2
-            (x_c, y_c, z_c), fcc_offsets = generate_fcc(grid_size, a)
-            
-            # Plot corner atoms (sub lattice A)
-            # REMOVED: This is now ax.scatter() instead of plot_3d_lattice()
-            # plot_3d_lattice(
-            #     x_c.ravel(), y_c.ravel(), z_c.ravel(),
-            #     title=f"3D FCC with {element_1} and {element_2}",
-            #     color=color_1, marker_size=radius_1 * 100
-            # )
-            ax.scatter(
-                x_c.ravel(), y_c.ravel(), z_c.ravel(),
-                c=color_1, s=radius_1 * 100, label=f"{element_1} ({color_1}) (Corners)"
-            )
-            
-            # Plot face centered atoms (sub lattice B)
-            # REMOVED: This is now ax.scatter() instead of plot_3d_lattice()
-            for offset in fcc_offsets:
-                ox, oy, oz = offset
-                # plot_3d_lattice(
-                #     ox.ravel(), oy.ravel(), oz.ravel(),
-                #     title=f"3D FCC with {element_1} and {element_2}",
-                #     color=color_2, marker_size=radius_2 * 100
-                # )
-                ax.scatter(
-                    ox.ravel(), oy.ravel(), oz.ravel(),
-                    c=color_2, s=radius_2 * 100, label=f"{element_2} ({color_2}) (Faces)"
-                )
-        
-        # Adding common plot settings
-        ax.set_title(f"{lattice_type.upper()} Multi Element Lattice")
-        ax.set_xlabel("X (Å)")
-        ax.set_ylabel("Y (Å)")
-        ax.set_zlabel("Z (Å)")
-        ax.legend(loc="upper right")
-        
-        # Display the plot
-        plt.show()
-        
-    # Function to generate and plot a lattice based on the selected type    
-    def generate_and_plot(lattice_type):
-        """ Generate and plot a lattice based on the selected type, element, and atom color """
-        import numpy as np
-        grid_size = 5
-        a = 1.0
-        element = selected_element_1.get()
-        color = ELEMENT_DATA[element]["color"]
-        radius = ELEMENT_DATA[element]["radius"]
-        marker_size = radius * 100 # Scaled for better visibility
-        
-        if lattice_type == "sc":
+
+        # 2D Lattices
+        if lattice_type == "2d_sc":
             x, y = generate_2d_simple_cubic(grid_size, a)
-            plot_2d_lattice(x, y, f"2D Simple Cubic ({element})", color, marker_size)
-        elif lattice_type == "tri":
+            plot_2d_lattice(x, y, f"2D Simple Cubic ({element_1})", color_1, radius_1 * 100)
+        elif lattice_type == "2d_tri":
             x, y = generate_2d_triangular(grid_size, a)
-            plot_2d_lattice(x, y, f"2D Triangular ({element})", color, marker_size)
-        elif lattice_type == "hex":
+            plot_2d_lattice(x, y, f"2D Triangular ({element_1})", color_1, radius_1 * 100)
+        elif lattice_type == "2d_hex":
             x, y = generate_2d_hexagonal(grid_size, a)
-            plot_2d_lattice(x, y, f"2D Hexagonal ({element})", color, marker_size)
-        elif lattice_type =="3d_sc":
+            plot_2d_lattice(x, y, f"2D Hexagonal ({element_1})", color_1, radius_1 * 100)
+
+        # 3D Lattices
+        elif lattice_type == "3d_sc":
             x, y, z = generate_3d_simple_cubic(grid_size, a)
-            plot_3d_lattice(x, y, z, f"3D Simple Cubic ({element})", color, marker_size)
+            plot_3d_lattice(x, y, z, f"3D Simple Cubic ({element_1})", color_1, radius_1 * 100)
         elif lattice_type == "3d_bcc":
             (x_c, y_c, z_c), (x_b, y_b, z_b) = generate_bcc(grid_size, a)
-            ''' Combining corner and center atoms into one scatter plot '''
-            all_x = np.concatenate([x_c.ravel(), x_b.ravel()])
-            all_y = np.concatenate([y_c.ravel(), y_b.ravel()])
-            all_z = np.concatenate([z_c.ravel(), z_b.ravel()])
-            plot_3d_lattice(all_x, all_y, all_z, "3D BCC ({element})", color, marker_size)
-            
+            plot_3d_lattice(
+                [x_c.ravel(), x_b.ravel()],
+                [y_c.ravel(), y_b.ravel()],
+                [z_c.ravel(), z_b.ravel()],
+                title=f"3D BCC with {element_1} and {element_2}",
+                colors=[color_1, color_2],
+                marker_sizes=[radius_1 * 100, radius_2 * 100],
+                elements=[element_1, element_2]
+            )
         elif lattice_type == "3d_fcc":
             (x_c, y_c, z_c), fcc_offsets = generate_fcc(grid_size, a)
             all_x = [x_c.ravel()]
@@ -167,40 +102,32 @@ def main():
                 all_x.append(ox.ravel())
                 all_y.append(oy.ravel())
                 all_z.append(oz.ravel())
-            
             plot_3d_lattice(
-                np.concatenate(all_x),
-                np.concatenate(all_y),
-                np.concatenate(all_z),
-                "3D FCC ({element})", 
-                color, 
-                marker_size
+                all_x, all_y, all_z,
+                title=f"3D FCC with {element_1} and {element_2}",
+                colors=[color_1, color_2],
+                marker_sizes=[radius_1 * 100, radius_2 * 100],
+                elements=[element_1, element_2]
             )
-    
-    # Dropdown for Sub Lattice A (Example: Corner Atoms)
-    tk.Label(root, text="Select Element for Sub Lattice A (Corners):").pack(pady=5)
-    element_combo_1 = ttk.Combobox(root, textvariable=selected_element_1, values=list(ELEMENT_DATA.keys())) 
-    element_combo_1.pack(pady=5)
-    
-    # Dropdown for Sub Lattice B (Example: Center or Face Atoms)
-    tk.Label(root, text="Select Element for Sub Lattice B (Centers or Faces):").pack(pady=5)
-    element_combo_2 = ttk.Combobox(root, textvariable=selected_element_2, values=list(ELEMENT_DATA.keys()))
-    element_combo_2.pack(pady=5)
-    
-    # Buttons to generate and plot different types of lattices
-    tk.Button(root, text="3D BCC (Multi Element)", command=lambda: generate_and_plot_multi("3d_bcc")).pack(pady=5)
-    tk.Button(root, text="3D FCC (Multi Element)", command=lambda: generate_and_plot_multi("3d_fcc")).pack(pady=5)
-    tk.Button(root, text="Pick Color ( Sub Lattice A)", command=lambda: pick_color(selected_element_1)).pack(pady=5)
-    tk.Button(root, text="Pick Color ( Sub Lattice B)", command=lambda: pick_color(selected_element_2)).pack(pady=5)
-    tk.Button(root, text="Simple Cubic", command=lambda: generate_and_plot("sc")).pack(pady=5)
-    tk.Button(root, text="Triangular", command=lambda: generate_and_plot("tri")).pack(pady=5)
-    tk.Button(root, text="Hexagonal", command=lambda: generate_and_plot("hex")).pack(pady=5)
-    tk.Button(root, text="3D Simple Cubic", command=lambda: generate_and_plot("3d_sc")).pack(pady=5)
-    tk.Button(root, text="3D BCC", command=lambda: generate_and_plot("3d_bcc")).pack(pady=5)
-    tk.Button(root, text="3D FCC", command=lambda: generate_and_plot("3d_fcc")).pack(pady=5)
 
+    # Frame for Lattice Buttons (Grid-Aligned)
+    frame_lattices = ttk.Frame(root, padding=10)
+    frame_lattices.grid(row=2, column=0, columnspan=2, sticky="ew")
 
+    # Lattice buttons for 2D and 3D structures
+    lattice_buttons = [
+        ("2D Simple Cubic", "2d_sc"),
+        ("2D Triangular", "2d_tri"),
+        ("2D Hexagonal", "2d_hex"),
+        ("3D Simple Cubic", "3d_sc"),
+        ("3D BCC", "3d_bcc"),
+        ("3D FCC", "3d_fcc"),
+    ]
 
+    # Create buttons for each lattice type
+    for i, (text, lattice_type) in enumerate(lattice_buttons):
+        row, col = divmod(i, 2)  # Auto-grid in two columns
+        ttk.Button(frame_lattices, text=text, command=lambda lt=lattice_type: generate_and_plot(lt), width=20).grid(row=row, column=col, padx=5, pady=5)
 
     root.mainloop()
 
