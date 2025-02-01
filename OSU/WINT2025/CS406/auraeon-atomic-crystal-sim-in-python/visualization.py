@@ -17,7 +17,15 @@ def plot_3d_lattice(x, y, z, title="3D Lattice", color='blue', marker_size=50, e
     # plots a 3D lattice using a scatter plot in matplotlib 
     fig = plt.figure(figsize=(7, 5))
     ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(x, y, z, c=color, s=marker_size, label=f"{element} ({color})")
+    
+    # If multiple elements are passed, iterate through them
+    if isinstance(color, list) and isinstance(marker_size, list) and isinstance(element, list):
+        for i in range(len(color)):
+            ax.scatter(x[i], y[i], z[i], c=color[i], s=marker_size[i], label=f"{element[i]} ({color[i]})")
+    else:
+        ax.scatter(x, y, z, c=color, s=marker_size, label=f"{element} ({color})")        
+    
+    # Adding common plot settings
     ax.set_title(title)
     ax.set_xlabel("X (Å)")
     ax.set_ylabel("Y (Å)")
