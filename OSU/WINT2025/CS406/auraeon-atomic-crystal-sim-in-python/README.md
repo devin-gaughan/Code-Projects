@@ -1,4 +1,4 @@
-# Auraeon - Crystal Lattice Simulator v0.2.4
+# Auraeon - Crystal Lattice Simulator v0.3.0
 
 ## Overview
 

@@ -10,7 +10,7 @@ from visualization import plot_2d_lattice, plot_3d_lattice
 # Main function to create the GUI
 def main():
     root = tk.Tk()
-    root.title("Auraeon - Crystal Lattice Simulator v0.2.4")
+    root.title("Auraeon - Crystal Lattice Simulator v0.3.0")
     root.geometry("600x500")  # Set default window size
 
     # Apply a theme for modern styling
