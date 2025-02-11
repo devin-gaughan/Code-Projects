@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLineEdit, QPush
 class RSSFeedReader(QWidget):
     def __init__(self):
         super().__init__()
-        sekf.init_ui()
+        self.init_ui()
         
     def init_ui(self):
         self.setWindowTitle("RSS Feed Reader")
@@ -37,7 +37,7 @@ class RSSFeedReader(QWidget):
         self.setLayout(layout)
         
         # Connect list item click to display summary
-        self.food_list.itemClicked.connect(self.display_summary)
+        self.feed_list.itemClicked.connect(self.display_summary)
         
     def fetch_feed(self):
         url = self.url_input.text()
