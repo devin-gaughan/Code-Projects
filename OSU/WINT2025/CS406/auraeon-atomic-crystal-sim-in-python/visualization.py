@@ -36,7 +36,7 @@ def plot_2d_lattice(x, y, title="2D Lattice", colors="blue", marker_size=50, ele
     ax_2d.legend(loc="center left", bbox_to_anchor=(1, 0.5))
 
     # Draw the plot and show it
-    fig_2d.canvas.draw()
+    fig_2d.canvas.draw_idle()
     plt.show(block=False)  # Keep the window interactive
 
 # 3D LATTICE VISUALIZATION FUNCTION
@@ -74,5 +74,5 @@ def plot_3d_lattice(x, y, z, title="3D Lattice", colors="blue", marker_sizes=50,
     ax_3d.legend(loc="center left", bbox_to_anchor=(1, 0.5))
 
     # Draw the plot and show it
-    fig_3d.canvas.draw()
+    fig_3d.canvas.draw_idle()
     plt.show(block=False)  # Keep the window interactive
