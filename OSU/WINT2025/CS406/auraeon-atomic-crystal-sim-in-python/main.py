@@ -10,7 +10,7 @@ from visualization import plot_2d_lattice, plot_3d_lattice
 # Main function to create the GUI
 def main():
     root = tk.Tk()
-    root.title("Auraeon - Crystal Lattice Simulator v0.3.1")
+    root.title("Auraeon - Crystal Lattice Simulator v0.3.21")
     root.geometry("600x600")  # Set default window size
 
     # Apply a theme for modern styling
@@ -80,11 +80,33 @@ def main():
     add_slider(frame_lattice_constants, "β (°):", lattice_beta, 4, 30.0, 150.0)
     add_slider(frame_lattice_constants, "γ (°):", lattice_gamma, 5, 30.0, 150.0)       
     
+    # Unit Cell Count Variables
+    unit_cells_x = tk.IntVar(value=2)
+    unit_cells_y = tk.IntVar(value=2)
+    unit_cells_z = tk.IntVar(value=2)
+    
+    # Frame for Unit Cell Sliders
+    frame_unit_cells = ttk.LabelFrame(root, text="Unit Cell Count", padding=10)
+    frame_unit_cells.grid(row=2, column=0, columnspan=2, sticky="ew", padx=10, pady=10)
+    
+    def add_unit_slider(frame, label, variable, row, min_val, max_val):
+        ttk.Label(frame, text=label).grid(row=row, column=0, sticky="w", padx=5, pady=2)
+        slider = ttk.Scale(frame, from_=min_val, to=max_val, orient="horizontal", variable=variable, length=200)
+        slider.grid(row=row, column=1, padx=5, pady=2, sticky="ew")
+        return slider
+    
+    # Create sliders for nx, ny, nz
+    add_unit_slider(frame_unit_cells, "nx (cells):", unit_cells_x, 0, 1, 10)
+    add_unit_slider(frame_unit_cells, "ny (cells):", unit_cells_y, 1, 1, 10)
+    add_unit_slider(frame_unit_cells, "nz (cells):", unit_cells_z, 2, 1, 10)
+    
+    
     # Function to Generate Lattices
     def generate_and_plot(lattice_type):
         """Handles lattice generation and visualization."""
         grid_size = 5
         a, b, c = lattice_a.get(), lattice_b.get(), lattice_c.get()
+        nx, ny, nz = unit_cells_x.get(), unit_cells_y.get(), unit_cells_z.get()
         
         element_1 = selected_element_1.get()
         element_2 = selected_element_2.get()
@@ -107,22 +129,22 @@ def main():
 
         # 3D Lattices
         elif lattice_type == "3d_sc":
-            x, y, z = generate_3d_simple_cubic(grid_size, a, b, c)
-            plot_3d_lattice(x, y, z, f"3D Simple Cubic ({element_1}) (a={a:.2f}, b:{b:.2f}, c={c:.2f})", color_1, radius_1 * 100)
+            x, y, z = generate_3d_simple_cubic(nx, ny, nz, a, b, c)
+            plot_3d_lattice(x, y, z, f"3D Simple Cubic ({element_1}) (a={a:.2f}, b:{b:.2f}, c={c:.2f}) (nx={nx}, ny={ny}, nz={nz})", color_1, radius_1 * 100)
         
         elif lattice_type == "3d_bcc":
-            (x_c, y_c, z_c), (x_b, y_b, z_b) = generate_bcc(grid_size, a, b, c)
+            (x_c, y_c, z_c), (x_b, y_b, z_b) = generate_bcc(nx, ny, nz, a, b, c)
             plot_3d_lattice(
                 [x_c.ravel(), x_b.ravel()],
                 [y_c.ravel(), y_b.ravel()],
                 [z_c.ravel(), z_b.ravel()],
-                title=f"3D BCC with {element_1} and {element_2} (a={a:.2f}, b={b:.2f}, c={c:.2f})",
+                title=f"3D BCC with {element_1} and {element_2} (a={a:.2f}, b={b:.2f}, c={c:.2f}) (nx={nx}, ny={ny}, nz={nz})",
                 colors=[color_1, color_2],
                 marker_sizes=[radius_1 * 100, radius_2 * 100],
                 elements=[element_1, element_2]
             )
         elif lattice_type == "3d_fcc":
-            (x_c, y_c, z_c), fcc_offsets = generate_fcc(grid_size, a, b, c)
+            (x_c, y_c, z_c), fcc_offsets = generate_fcc(nx, ny, nz, a, b, c)
             all_x = [x_c.ravel()]
             all_y = [y_c.ravel()]
             all_z = [z_c.ravel()]
@@ -132,7 +154,7 @@ def main():
                 all_z.append(oz.ravel())
             plot_3d_lattice(
                 all_x, all_y, all_z,
-                title=f"3D FCC with {element_1} and {element_2} (a={a:.2f}, b={b:.2f}, c={c:.2f})",
+                title=f"3D FCC with {element_1} and {element_2} (a={a:.2f}, b={b:.2f}, c={c:.2f}) (nx={nx}, ny={ny}, nz={nz})",
                 colors=[color_1, color_2],
                 marker_sizes=[radius_1 * 100, radius_2 * 100],
                 elements=[element_1, element_2]

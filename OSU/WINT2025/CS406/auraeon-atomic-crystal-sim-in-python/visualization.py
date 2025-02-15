@@ -23,7 +23,7 @@ def plot_2d_lattice(x, y, title="2D Lattice", colors="blue", marker_size=50, ele
     # Plot the lattice with multi-element support
     if isinstance(colors, list) and isinstance(elements, list) and isinstance(x, list):
         for i in range(len(colors)):
-            ax_2d.scatter(x[i], y[i], c=colors[i], s=marker_size, label=f"{elements[i]} ({colors[i]})")
+            ax_2d.scatter(x[i], y[i], c=colors[i], s=marker_size[i], label=f"{elements[i]} ({colors[i]})")
     else:
         ax_2d.scatter(x, y, c=colors, s=marker_size, label=f"{elements} ({colors})")
 
@@ -41,7 +41,7 @@ def plot_2d_lattice(x, y, title="2D Lattice", colors="blue", marker_size=50, ele
 
 # 3D LATTICE VISUALIZATION FUNCTION
 def plot_3d_lattice(x, y, z, title="3D Lattice", colors="blue", marker_sizes=50, elements="Unknown"):
-    """Plots a 3D lattice and ensures the legend is outside of the plot without affecting aspect ratio."""
+    """Plots a 3D lattice """
     global fig_3d, ax_3d
 
     # Close 2D figure if it exists
