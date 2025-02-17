@@ -1,45 +1,40 @@
-# Auraeon - Crystal Lattice Simulator v0.3.3
+# Auraeon - Crystal Lattice Simulator v0.3.5
 
 ## Overview
 
-The **Auraeon Crystal Lattice Simulator** is a Python-based program designed to generate and visualize 2D and 3D crystal lattices. Version **v0.3.3** continues our progress by refining the multi-element support, UI enhancements, and structural rendering. However, two known issues have appeared in this release:
+The **Auraeon Crystal Lattice Simulator** is a Python-based program for generating and visualizing 2D and 3D crystal lattices. Version **v0.3.5** introduces several new capabilities and fixes while retaining a couple of known issues.
 
-1. **Overlapping Atoms** in 2D plots and 3D Hex plots.
-2. **Broken Dynamic Plot Updates** when slider values change—plots do not always refresh automatically.
+## Features
 
-These bugs will be addressed in a future fix.
+### 1. Dynamic UI & Plot Refresh
 
-## Features in v0.3.3
+- **Live Updates**: Any change in sliders (`a, b, c, α, β, γ, nx, ny, nz`), crystal system selection, or element dropdown **automatically** re-renders the lattice plot.
+- **Consolidated Plots**: The same 2D figure and 3D figure are reused without spawning extra windows.
 
-### Lattice Constants & Angular Rotations
+### 2. Multi-Element & Color Picker
 
-- **Sliders:** Modify `(a, b, c, α, β, γ)` via a user-friendly GUI.
-- **Partially Real-Time Updates:** Sliders are present, but dynamic updates are temporarily broken.
-- **Angular Control:** Simulate rotations in 3D to reflect `α, β, γ` angles (once dynamic refresh is fixed).
+- **Two Element Selection**: Choose element_1 and element_2 from a built-in dictionary (see `elements.py`).
+- **Unify & Swap**:
+  - **Unify**: Makes Element 2 match Element 1 (both type and color).
+  - **Swap**: Exchanges the two elements and their colors.
+- **Color Pickers** to customize each element’s appearance.
 
-### Unit Cell Customization
+### 3. Crystal System Selector
 
-- **`nx, ny, nz`** sliders control the number of unit cells.
-- **2D & 3D** patterns available: SC, BCC, FCC, Hex.
-- **Multi-Element**: Users can display up to two different elements.
+- **Combo Box**: Pick **isometric, orthorhombic, tetragonal, hexagonal** (placeholders for monoclinic, triclinic).
+- **Auto-Overrides**: `(a, b, c, α, β, γ)` adjust to typical angles/side relationships for each system.
 
-### Color Picker & Element Selection
+### 4. Lattice Constants & Rotation Angles
 
-- **Drop-down** to choose element_1 and element_2 from a built-in table.
-- **Color pickers** for both element_1 and element_2, giving users freedom to style atoms.
+- **Sliders** for `(a, b, c, α, β, γ)` provide real-time adjustments.
+- **2D Rotation**: Optionally apply α to rotate 2D structures in-plane.
+- **3D Rotation**: Angles `(α, β, γ)` can rotate the lattice about X/Y/Z (if enabled in the code).
 
-### 2D & 3D Visualization
+### 5. 2D & 3D Lattice Types
 
-- **Matplotlib** used for plotting.
-- **No blank windows**—only one figure for 2D and one for 3D.
-- **Auto-scaling** aims to fill the view but can cause overlapping in some lattice types.
-
-## Known Bugs
-
-- **Overlapping Atoms** in certain 2D plots and the 3D Hex plot.
-- **Slider-Driven Updates** for plots are currently broken and do not consistently refresh.
-- **Legend text** outside of plot grid caused a fatal UI bug. Move the legend back into the plot window to fix for now.
-- **Gridlines for 2D Plots** are currently missing.
+- **2D**: Simple Cubic, Triangular, Hexagonal
+- **3D**: Simple Cubic, BCC, FCC, Hex
+  - **Multi-Element**: BCC corners vs. center, FCC corners vs. face-centered atoms, etc.
 
 ## Installation & Running
 
