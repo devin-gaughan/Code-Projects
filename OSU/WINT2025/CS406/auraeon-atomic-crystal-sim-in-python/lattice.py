@@ -1,52 +1,51 @@
 import numpy as np
 
-### 2D Lattice Generation Functions ###
-def generate_2d_simple_cubic(grid_size, a, b):
-    """Generate a 2D Simple Cubic lattice structure."""
-    x, y = np.meshgrid(
-        np.linspace(0, (grid_size - 1) * a, grid_size),
-        np.linspace(0, (grid_size - 1) * b, grid_size))
+def generate_2d_simple_cubic(nx, ny, a, b):
+    x_vals = np.linspace(0, (nx - 1) * a, nx)
+    y_vals = np.linspace(0, (ny - 1) * b, ny)
+    x, y = np.meshgrid(x_vals, y_vals)
     return x, y
 
-def generate_2d_triangular(grid_size, a, b):
-    """Generate a 2D Triangular lattice structure."""
-    x, y = generate_2d_simple_cubic(grid_size, a, b) # Starts with a basic grid
-    x[1::2] += a / 2  # Offset every other row to form a triangular pattern
+def generate_2d_triangular(nx, ny, a, b):
+    x, y = generate_2d_simple_cubic(nx, ny, a, b)
+    x[1::2] += a / 2
     return x, y
 
-def generate_2d_hexagonal(grid_size, a, b):
-    """Generate a 2D Hexagonal lattice structure."""
-    x, y = generate_2d_triangular(grid_size, a, b)
-    y *= np.sqrt(3) / 2  # Adjust spacing for hexagonal geometry
+def generate_2d_hexagonal(nx, ny, a, b):
+    x, y = generate_2d_triangular(nx, ny, a, b)
+    y *= np.sqrt(3) / 2
     return x, y
 
-### 3D Lattice Generation Functions ###
 def generate_3d_simple_cubic(nx, ny, nz, a, b, c):
-    """Generate a 3D Simple Cubic lattice structure."""
-    x, y, z = np.meshgrid(
-        np.linspace(0, (nx - 1) * a, nx),
-        np.linspace(0, (ny - 1) * b, ny),
-        np.linspace(0, (nz - 1) * c, nz)
-    )
+    x_vals = np.linspace(0, (nx - 1) * a, nx)
+    y_vals = np.linspace(0, (ny - 1) * b, ny)
+    z_vals = np.linspace(0, (nz - 1) * c, nz)
+    x, y, z = np.meshgrid(x_vals, y_vals, z_vals)
     return x, y, z
 
 def generate_bcc(nx, ny, nz, a, b, c):
-    """Generate a Body-Centered Cubic (BCC) lattice with multi-element support."""
-    x, y, z = generate_3d_simple_cubic(nx, ny, nz, a, b, c)  # Corner atoms
+    x, y, z = generate_3d_simple_cubic(nx, ny, nz, a, b, c)
     x_bcc = x + a / 2
     y_bcc = y + b / 2
-    z_bcc = z + c / 2  # Center atoms
+    z_bcc = z + c / 2
     return (x, y, z), (x_bcc, y_bcc, z_bcc)
 
 def generate_fcc(nx, ny, nz, a, b, c):
-    """Generate a Face-Centered Cubic (FCC) lattice with multi-element support."""
-    x, y, z = generate_3d_simple_cubic(nx, ny, nz, a, b, c)  # Corner atoms
-
-    # Face-centered atoms offset from the corners
+    x, y, z = generate_3d_simple_cubic(nx, ny, nz, a, b, c)
     fcc_offsets = [
         (0, b/2, c/2), (a, b/2, c/2),
         (a/2, 0, c/2), (a/2, b, c/2),
         (a/2, b/2, 0), (a/2, b/2, c)
     ]
-    fcc_atoms = [(x + ox, y + oy, z + oz) for (ox, oy, oz) in fcc_offsets]
-    return (x, y, z), fcc_atoms
+    offset_arrays = []
+    for (ox, oy, oz) in fcc_offsets:
+        offset_arrays.append((x + ox, y + oy, z + oz))
+    return (x, y, z), offset_arrays
+
+def generate_3d_hexagonal(nx, ny, nz, a, b, c):
+    x_vals = np.linspace(0, (nx - 1) * a, nx)
+    y_vals = np.linspace(0, (ny - 1) * b, ny)
+    z_vals = np.linspace(0, (nz - 1) * c, nz)
+    x, y, z = np.meshgrid(x_vals, y_vals, z_vals)
+    y *= np.sqrt(3) / 2
+    return x, y, z

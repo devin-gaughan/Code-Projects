@@ -1,72 +1,79 @@
-# Auraeon - Crystal Lattice Simulator v0.3.21
+# Auraeon - Crystal Lattice Simulator v0.3.3
 
 ## Overview
 
-The **Auraeon Crystal Lattice Simulator** is a Python-based program designed to generate and visualize 2D and 3D crystal lattices. Version **v0.3.21** builds on v0.3.1 by adding customizable unit cell size (`nx, ny, nz`), allowing users to specify the number of unit cells in each direction dynamically.
+The **Auraeon Crystal Lattice Simulator** is a Python-based program designed to generate and visualize 2D and 3D crystal lattices. Version **v0.3.3** continues our progress by refining the multi-element support, UI enhancements, and structural rendering. However, two known issues have appeared in this release:
 
-## Features in v0.3.21
+1. **Overlapping Atoms** in 2D plots and 3D Hex plots.
+2. **Broken Dynamic Plot Updates** when slider values change—plots do not always refresh automatically.
 
-### **Adjustable Lattice Constants & Unit Cell Size**
-- **New UI Sliders:** Modify lattice parameters (`a, b, c, α, β, γ`) via sliders.
-- **Unit Cell Customization:** Adjust unit cell count in each direction (`nx, ny, nz`).
-- **Real-Time Updates:** Changes dynamically modify lattice structures without restarting the program.
-- **Updated Lattice Generation:** Supports variable lattice constants and multiple unit cells in 2D and 3D structures.
+These bugs will be addressed in a future fix.
 
-### **Supported Lattice Types**
-- **2D Lattices:**
-  - Simple Cubic
-  - Triangular
-  - Hexagonal
-- **3D Lattices:**
-  - Simple Cubic
-  - Body-Centered Cubic (BCC)
-  - Face-Centered Cubic (FCC)
+## Features in v0.3.3
 
-### **Multi-Element Support**
-- **Dropdown selection for atomic species**
-- **Color picker for real-time element customization**
-- **Dynamic legend for element identification in multi-element plots**
+### Lattice Constants & Angular Rotations
 
-### **Visualization Enhancements**
-- **Legend Placement Fixes:** Legends appear outside the plot to avoid overlap.
-- **Improved Axis Scaling:** Adjustments ensure better visualization of lattice structures.
-- **Updated GUI Layout:** Improved organization and button placement for better usability.
+- **Sliders:** Modify `(a, b, c, α, β, γ)` via a user-friendly GUI.
+- **Partially Real-Time Updates:** Sliders are present, but dynamic updates are temporarily broken.
+- **Angular Control:** Simulate rotations in 3D to reflect `α, β, γ` angles (once dynamic refresh is fixed).
 
-## Known Bugs and Issues
-- **Single element 2D and 3D plots show "unknown" instead of the name of `element_1` in their legend label.**
-- **Plot axis labels do not update dynamically when sliders are changed—requiring a new plot window to be opened to see the updated slider values.**
-- **Sliders are not labeled with what value their position on the slider bar represents.**
-- **Element selector drop-downs only allow `element_1` to be used for corner atoms and `element_2` to be used for face and body-centered atoms—there is no way to view a multi-element plot using Simple Cubic or 2D plots.**
-- **2D plots and Simple Cubic 3D plots only show single elements even when two elements are selected (3D BCC and 3D FCC are unaffected).**
-- **3D plots do not correctly scale with increasing unit cell count (`nx, ny, nz`), causing distortion in the visualization.**
-- **2D plots currently do not use the adjustable unit cell values (`nx, ny`) and always display a fixed grid size.**
+### Unit Cell Customization
 
-## Future Work (v0.3.22 - v0.3.29)
-- **Fix UI bugs related to element selection and visualization.**
-- **Improve real-time updating of axis labels when sliders are changed.**
-- **Enable two-element rendering for Simple Cubic and 2D plots.**
-- **Fix scaling issues for 3D plots with larger unit cell counts.**
-- **Ensure 2D plots correctly use `nx` and `ny` values for unit cell sizing.**
-- **Continue optimizing visualization scaling for large lattice structures.**
+- **`nx, ny, nz`** sliders control the number of unit cells.
+- **2D & 3D** patterns available: SC, BCC, FCC, Hex.
+- **Multi-Element**: Users can display up to two different elements.
+
+### Color Picker & Element Selection
+
+- **Drop-down** to choose element_1 and element_2 from a built-in table.
+- **Color pickers** for both element_1 and element_2, giving users freedom to style atoms.
+
+### 2D & 3D Visualization
+
+- **Matplotlib** used for plotting.
+- **No blank windows**—only one figure for 2D and one for 3D.
+- **Auto-scaling** aims to fill the view but can cause overlapping in some lattice types.
+
+## Known Bugs
+
+- **Overlapping Atoms** in certain 2D plots and the 3D Hex plot.
+- **Slider-Driven Updates** for plots are currently broken and do not consistently refresh.
+- **Legend text** outside of plot grid caused a fatal UI bug. Move the legend back into the plot window to fix for now.
+- **Gridlines for 2D Plots** are currently missing.
 
 ## Installation & Running
 
-1. **Clone or Download** the repository:
+1. **Clone or Download** this repository:
    ```bash
    git clone https://github.com/devin-gaughan/Code-Projects.git
    ```
-2. **Navigate into the project directory:**
+2. **Navigate** into the project directory:
    ```bash
    cd auraeon-atomic-crystal-sim-in-python
    ```
-3. **Run the main script:**
+3. **Install** the required Python packages:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. **Run** the main script:
    ```bash
    python main.py
    ```
+5. **Interact** with the GUI:
+   - Adjust **(a, b, c, α, β, γ)**.
+   - Increase **(nx, ny, nz)** to show more unit cells.
+   - Select two elements & pick colors for each.
+   - Choose 2D or 3D lattice types to generate (noting the known overlapping bugs).
+
+## Future Fixes
+
+- **Address Overlapping** in 2D and 3D hex.
+- **Fix Slider Refresh** to restore dynamic updates when constants/angles change.
 
 ## Contact
 
 For questions or feedback:
+
 - **Name:** Devin Patrick Gaughan
 - **GitHub:** [devin-gaughan](https://github.com/devin-gaughan)
 - **Email:** devin@devingaughan.com

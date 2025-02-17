@@ -2,77 +2,92 @@ import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 
-# Initialize figures and axes for 2D and 3D lattice plots
 fig_2d, ax_2d = None, None
 fig_3d, ax_3d = None, None
 
-# 2D LATTICE VISUALIZATION FUNCTION
-def plot_2d_lattice(x, y, title="2D Lattice", colors="blue", marker_size=50, elements="Unknown"):
-    """Plots a 2D lattice with multi-element support and ensures the legend is placed outside the plot without skewing."""
+def plot_2d_lattice(x, y, a, b, title="2D Lattice", colors="blue", marker_sizes=50, elements="Unknown"):
+    """Plots a 2D lattice with multi-element support, ensuring the correct match of arrays."""
     global fig_2d, ax_2d
+    
+    if fig_2d is None or not plt.fignum_exists(fig_2d.number):
+        fig_2d, ax_2d = plt.subplots(figsize=(10, 8))
 
-    # Close 3D figure if it exists
-    if plt.fignum_exists(fig_3d) and fig_3d is not None:
-        plt.close(fig_3d)
+    ax_2d.clear()
 
-    # Create new figure with extra width for the legend
-    fig_2d, ax_2d = plt.subplots(figsize=(8, 6))  # Increase figure width
-    fig_2d.subplots_adjust(right=0.75)  # Shift the plot left to make space for legend
-    ax_2d.clear() # Clear the plot
-
-    # Plot the lattice with multi-element support
-    if isinstance(colors, list) and isinstance(elements, list) and isinstance(x, list):
-        for i in range(len(colors)):
-            ax_2d.scatter(x[i], y[i], c=colors[i], s=marker_size[i], label=f"{elements[i]} ({colors[i]})")
+    # If x, y are lists => multi-element. Each list item is one element's coordinates
+    if isinstance(x, list) and isinstance(y, list):
+        for i in range(len(x)):
+            # s_val must be a scalar OR match x[i].size
+            if isinstance(marker_sizes, list):
+                s_val = marker_sizes[i]
+            else:
+                s_val = marker_sizes
+            ax_2d.scatter(
+                np.ravel(x[i]),
+                np.ravel(y[i]),
+                c=colors[i],
+                s=s_val,
+                label=f"{elements[i]} ({colors[i]})"
+            )
     else:
-        ax_2d.scatter(x, y, c=colors, s=marker_size, label=f"{elements} ({colors})")
+        # Single array for single-element
+        ax_2d.scatter(np.ravel(x), np.ravel(y), c=colors, s=marker_sizes, label=f"{elements} ({colors})")
 
-    # Set plot title and axis labels
+    ax_2d.set_xlim([np.min(x) - a, np.max(x) + a])
+    ax_2d.set_ylim([np.min(y) - b, np.max(y) + b])
     ax_2d.set_title(title)
-    ax_2d.set_xlabel("X (Å)")
-    ax_2d.set_ylabel("Y (Å)")
-
-    # Move legend outside of the plot but keep proper scaling
-    ax_2d.legend(loc="center left", bbox_to_anchor=(1, 0.5))
-
-    # Draw the plot and show it
+    ax_2d.set_xlabel(f"X (Å), a={a:.2f}")
+    ax_2d.set_ylabel(f"Y (Å), b={b:.2f}")
+    ax_2d.legend(loc="upper right")
     fig_2d.canvas.draw_idle()
-    plt.show(block=False)  # Keep the window interactive
+    plt.show(block=False)
 
-# 3D LATTICE VISUALIZATION FUNCTION
-def plot_3d_lattice(x, y, z, title="3D Lattice", colors="blue", marker_sizes=50, elements="Unknown"):
-    """Plots a 3D lattice """
+def plot_3d_lattice(x, y, z, a, b, c, title="3D Lattice", colors="blue", marker_sizes=50, elements="Unknown"):
+    """Plots a 3D lattice with correct multi-element formatting."""
     global fig_3d, ax_3d
 
-    # Close 2D figure if it exists
-    if plt.fignum_exists(fig_2d) and fig_2d is not None:
-        plt.close(fig_2d)
+    if fig_3d is None or not plt.fignum_exists(fig_3d.number):
+        fig_3d = plt.figure(figsize=(10, 8))
+        ax_3d = fig_3d.add_subplot(111, projection='3d')
 
-    # Create a new figure with additional width for the legend
-    fig_3d = plt.figure(figsize=(9, 6))  # Increase figure width
-    ax_3d = fig_3d.add_subplot(111, projection='3d')
-    fig_3d.subplots_adjust(right=0.75)  # Shift the plot left
-
-    # Clear the plot
     ax_3d.clear()
 
-    # Plot the lattice with multi-element support
-    if isinstance(colors, list) and isinstance(marker_sizes, list) and isinstance(elements, list):
-        if isinstance(x[0], np.ndarray):
-            for i in range(len(colors)):
-                ax_3d.scatter(x[i], y[i], z[i], c=colors[i], s=marker_sizes[i], label=f"{elements[i]} ({colors[i]})")
+    # If x, y, z are lists => multi-element
+    if isinstance(x, list) and isinstance(y, list) and isinstance(z, list):
+        for i in range(len(x)):
+            s_val = marker_sizes[i] if isinstance(marker_sizes, list) else marker_sizes
+            ax_3d.scatter(
+                np.ravel(x[i]),
+                np.ravel(y[i]),
+                np.ravel(z[i]),
+                c=colors[i],
+                s=s_val,
+                label=f"{elements[i]} ({colors[i]})"
+            )
+
+        # Consolidate all for auto-scale
+        x_all = np.concatenate([np.ravel(arr) for arr in x])
+        y_all = np.concatenate([np.ravel(arr) for arr in y])
+        z_all = np.concatenate([np.ravel(arr) for arr in z])
     else:
-        ax_3d.scatter(x, y, z, c=colors, s=marker_sizes, label=f"{elements} ({colors})")
+        ax_3d.scatter(
+            np.ravel(x), np.ravel(y), np.ravel(z),
+            c=colors, s=marker_sizes,
+            label=f"{elements} ({colors})"
+        )
+        x_all = np.ravel(x)
+        y_all = np.ravel(y)
+        z_all = np.ravel(z)
 
-    # Set plot title and axis labels
+    ax_3d.set_xlim([np.min(x_all) - a, np.max(x_all) + a])
+    ax_3d.set_ylim([np.min(y_all) - b, np.max(y_all) + b])
+    ax_3d.set_zlim([np.min(z_all) - c, np.max(z_all) + c])
+
+    ax_3d.view_init(elev=25, azim=40)
     ax_3d.set_title(title)
-    ax_3d.set_xlabel("X (Å)")
-    ax_3d.set_ylabel("Y (Å)")
-    ax_3d.set_zlabel("Z (Å)")
-
-    # Move legend outside of the plot while keeping proper scaling
-    ax_3d.legend(loc="center left", bbox_to_anchor=(1, 0.5))
-
-    # Draw the plot and show it
+    ax_3d.set_xlabel(f"X (Å), a={a:.2f}")
+    ax_3d.set_ylabel(f"Y (Å), b={b:.2f}")
+    ax_3d.set_zlabel(f"Z (Å), c={c:.2f}")
+    ax_3d.legend(loc="upper right")
     fig_3d.canvas.draw_idle()
-    plt.show(block=False)  # Keep the window interactive
+    plt.show(block=False)
