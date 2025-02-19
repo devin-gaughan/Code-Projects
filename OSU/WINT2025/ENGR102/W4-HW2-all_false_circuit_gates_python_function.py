@@ -34,7 +34,7 @@ print(all_false(1, 0, 1)) # Expected output: False
 print(all_false(1, 1, 0)) # Expected output: False
 print(all_false(1, 1, 1)) # Expected output: False
 
-
+# Sneaky
 
 # Nabbed some fancy truth table formatting ideas from people better at coding than me
 print(" a\tb\tc\t | \tall_false")
