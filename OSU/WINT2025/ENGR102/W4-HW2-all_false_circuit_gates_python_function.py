@@ -45,3 +45,5 @@ for a in [0, 1]:
             # This is the output of my function - praying it works
             Q_output = all_false(a, b, c)
             print(f"{a}\t{b}\t{c}\t | \t{Q_output}")
+
+# Finished
