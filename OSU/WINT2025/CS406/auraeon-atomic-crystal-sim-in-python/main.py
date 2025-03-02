@@ -12,7 +12,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 def main():
     root = tk.Tk()
-    root.title("Auraeon - Crystal Lattice Simulator v0.3.7")
+    root.title("Auraeon - Crystal Lattice Simulator v0.3.8")
     root.geometry("1200x900")
 
     # ==================== TRACK CURRENT LATTICE TYPE ====================
@@ -39,6 +39,10 @@ def main():
     selected_element_2 = tk.StringVar(value="C")
     element_color_1 = tk.StringVar(value=ELEMENT_DATA["Fe"]["color"])
     element_color_2 = tk.StringVar(value=ELEMENT_DATA["C"]["color"])
+
+    # ==================== DEFECTS & DOPING ====================
+    vacancy_percentage = tk.DoubleVar(value=0.0)
+    doping_percentage = tk.DoubleVar(value=0.0)
 
     # ==================== BOND LENGTH THRESHOLD ====================
     bond_length_threshold = tk.DoubleVar(value=2.0)
@@ -144,6 +148,8 @@ def main():
         unit_cells_y.set(5)
         unit_cells_z.set(5)
         crystal_system.set("isometric")
+        vacancy_percentage.set(0.0)
+        doping_percentage.set(0.0)
         refresh_plot()
 
     def unify_elements():
@@ -154,8 +160,10 @@ def main():
         refresh_plot()
 
     def swap_elements():
-        e1, e2 = selected_element_1.get(), selected_element_2.get()
-        c1, c2 = element_color_1.get(), element_color_2.get()
+        e1 = selected_element_1.get()
+        e2 = selected_element_2.get()
+        c1 = element_color_1.get()
+        c2 = element_color_2.get()
         selected_element_1.set(e2)
         selected_element_2.set(e1)
         element_color_1.set(c2)
@@ -209,6 +217,10 @@ def main():
         bond_threshold = bond_length_threshold.get()
         selected_atom = selected_atom_index.get()
 
+        # Get Vacancy and Doping % from sliders
+        vacancy_percent = vacancy_percentage.get()
+        doping_percent = doping_percentage.get()
+
         lattice_funcs = {
             "2d_sc": generate_2d_simple_cubic,
             "2d_tri": generate_2d_triangular,
@@ -218,208 +230,101 @@ def main():
             "3d_fcc": generate_fcc,
             "3d_hex": generate_3d_hexagonal
         }
+        elements = [e1, e2] # define element list
+        highlight_artist = None  # Initialize highlight_artist
 
         if lattice_type in ["2d_sc", "2d_tri", "2d_hex"]:
             x_total, y_total = lattice_funcs[lattice_type](nx, ny, a, b)
             x_total, y_total = rotate_2d(x_total, y_total, alpha)
-            if same_element:
-                x_list = [x_total]
-                y_list = [y_total]
-                colors = [col1]
-                sizes = [rad1]
-                elements = [e1]
-            else:
-                x_shifted = x_total + a * 0.3
-                y_shifted = y_total
-                x_list = [x_total, x_shifted]
-                y_list = [y_total, y_shifted]
-                colors = [col1, col2]
-                sizes = [rad1, rad2]
-                elements = [e1, e2]
-            plot_2d_lattice(
-                ax, x_list, y_list, a, b,
-                title=f"{lattice_type.upper()} Lattice (nx={nx}, ny={ny}, alpha={alpha:.1f})",
-                colors=colors,
-                marker_sizes=sizes,
-                elements=elements,
-                bond_threshold=bond_threshold
-            )
-            #clear the variables, preventing bugs
-            x_coords_global = None
-            y_coords_global = None
-            z_coords_global = None
-        elif lattice_type == "3d_sc":
-            x_sc, y_sc, z_sc = lattice_funcs[lattice_type](nx, ny, nz, a, b, c)
-            x_sc, y_sc, z_sc = rotate_3d(x_sc, y_sc, z_sc, alpha, beta, gamma)
-            if same_element:
-                x_list = [x_sc]
-                y_list = [y_sc]
-                z_list = [z_sc]
-                colors = [col1]
-                sizes = [rad1]
-                elements = [e1]
-            else:
-                x_shifted = x_sc
-                y_shifted = y_sc
-                z_shifted = z_sc + c * 0.25
-                x_list = [x_sc, x_shifted]
-                y_list = [y_sc, y_shifted]
-                z_list = [z_sc, z_shifted]
-                colors = [col1, col2]
-                sizes = [rad1, rad2]
-                elements = [e1, e2]
-            plot_3d_lattice(
-                ax, x_list, y_list, z_list,
-                a, b, c,
-                title=f"3D SC Lattice (nx={nx}, ny={ny}, nz={nz}, α={alpha:.1f}, β={beta:.1f}, γ={gamma:.1f})",
-                colors=colors,
-                marker_sizes=sizes,
-                elements=elements,
-                bond_threshold=bond_threshold
-            )
-
-            #clear the variables, preventing bugs
-            x_coords_global = None
-            y_coords_global = None
-            z_coords_global = None
-
-        elif lattice_type == "3d_hex":
-            x_hex, y_hex, z_hex = lattice_funcs[lattice_type](nx, ny, nz, a, b, c)
-            x_hex, y_hex, z_hex = rotate_3d(x_hex, y_hex, z_hex, alpha, beta, gamma)
-            if same_element:
-                x_list = [x_hex]
-                y_list = [y_hex]
-                z_list = [z_hex]
-                colors = [col1]
-                sizes = [rad1]
-                elements = [e1]
-            else:
-                x_shifted = x_hex
-                y_shifted = y_hex
-                z_shifted = z_hex + c * 0.25
-                x_list = [x_hex, x_shifted]
-                y_list = [y_hex, y_shifted]
-                z_list = [z_hex, z_shifted]
-                colors = [col1, col2]
-                sizes = [rad1, rad2]
-                elements = [e1, e2]
-            plot_3d_lattice(
-                ax, x_list, y_list, z_list,
-                a, b, c,
-                title=f"3D HEX Lattice (nx={nx}, ny={ny}, nz={nz}, α={alpha:.1f}, β={beta:.1f}, γ={gamma:.1f})",
-                colors=colors,
-                marker_sizes=sizes,
-                elements=elements,
-                bond_threshold=bond_threshold
-            )
-            #clear the variables, preventing bugs
-            x_coords_global = None
-            y_coords_global = None
-            z_coords_global = None
-
-        elif lattice_type == "3d_bcc":
-            (x_c, y_c, z_c), (x_b, y_b, z_b) = lattice_funcs[lattice_type](nx, ny, nz, a, b, c)
+            num_atoms = x_total.size
+            atom_types = [e1] * num_atoms # Default to element 1
+            x_flat, y_flat = x_total.flatten(), y_total.flatten() # 1D
+        elif lattice_type in ["3d_sc", "3d_hex"]:
+            x_total, y_total, z_total = lattice_funcs[lattice_type](nx, ny, nz, a, b, c)
+            x_total, y_total, z_total = rotate_3d(x_total, y_total, z_total, alpha, beta, gamma)
+            num_atoms = x_total.size
+            atom_types = [e1] * num_atoms # Default to element 1
+            x_flat, y_flat, z_flat = x_total.flatten(), y_total.flatten(), z_total.flatten() # 1D
+        elif lattice_type in ["3d_bcc", "3d_fcc"]:
+            base_lattice, other_lattice = lattice_funcs[lattice_type](nx, ny, nz, a, b, c)
+            x_c, y_c, z_c = base_lattice
+            x_b, y_b, z_b = other_lattice
             x_c, y_c, z_c = rotate_3d(x_c, y_c, z_c, alpha, beta, gamma)
             x_b, y_b, z_b = rotate_3d(x_b, y_b, z_b, alpha, beta, gamma)
+            num_base_atoms, num_other_atoms = x_c.size, x_b.size
+            x_flat = np.concatenate([x_c.flatten(), x_b.flatten()])
+            y_flat = np.concatenate([y_c.flatten(), y_b.flatten()])
+            z_flat = np.concatenate([z_c.flatten(), z_b.flatten()])
+            atom_types = [e1] * num_base_atoms + [e2] * num_other_atoms # Element 1 then Element 2
+            num_atoms = len(atom_types)
+        else:
+            print(f"Error: Unsupported lattice type: {lattice_type}")
+            return
 
-            if same_element:
-                x_list = [x_c, x_b]
-                y_list = [y_c, y_b]
-                z_list = [z_c, z_b]
-                colors = [col1, col1]  # Same color for both
-                sizes = [rad1, rad1]
-                elements = [e1, e1]
-            else:
-                x_list = [x_c, x_b]
-                y_list = [y_c, y_b]
-                z_list = [z_c, z_b]
-                colors = [col1, col2]
-                sizes = [rad1, rad2]
-                elements = [e1, e2]
+        # Vacancy Simulation
+        num_vacancies = int(num_atoms * vacancy_percent / 100)
+        vacancy_indices = np.random.choice(num_atoms, num_vacancies, replace=False)
+        x_plot = np.delete(x_flat, vacancy_indices)
+        y_plot = np.delete(y_flat, vacancy_indices)
+        if 'z_flat' in locals(): # Check if z exists for 3D
+            z_plot = np.delete(z_flat, vacancy_indices)
+        atom_types = np.delete(atom_types, vacancy_indices)
+
+        # Doping Simulation
+        num_atoms_to_dope = int(len(x_plot) * doping_percent / 100)
+        doping_indices = np.random.choice(len(x_plot), num_atoms_to_dope, replace=False)
+        for i in doping_indices:
+            atom_types[i] = e2 # replace atom e1 with e2
+
+        # Now Plot It
+        if lattice_type in ["2d_sc", "2d_tri", "2d_hex"]:
+            plot_2d_lattice(
+                ax, x_plot, y_plot, a, b,
+                title=f"{lattice_type.upper()} Lattice (nx={nx}, ny={ny}, alpha={alpha:.1f})",
+                colors=[ELEMENT_DATA[at]["color"] for at in atom_types],
+                marker_sizes=rad1, #Same marker size
+                elements=elements,
+                bond_threshold=bond_threshold
+            )
+            #clear the variables, preventing bugs
+            x_coords_global = None
+            y_coords_global = None
+            z_coords_global = None
+        elif lattice_type in ["3d_sc", "3d_hex","3d_bcc", "3d_fcc"]:
             plot_3d_lattice(
-                ax, x_list, y_list, z_list,
-                a, b, c,
-                title=f"3D BCC Lattice (nx={nx}, ny={ny}, nz={nz}, α={alpha:.1f}, β={beta:.1f}, γ={gamma:.1f})",
-                colors=colors,
-                marker_sizes=sizes,
+                ax, x_plot, y_plot, z_plot, a, b, c,
+                title=f"{lattice_type.upper()} Lattice (nx={nx}, ny={ny}, nz={nz}, α={alpha:.1f}, β={beta:.1f}, γ={gamma:.1f})",
+                colors=[ELEMENT_DATA[at]["color"] for at in atom_types],
+                marker_sizes=rad1, #same marker size
                 elements=elements,
                 bond_threshold=bond_threshold
             )
 
-            # Store the coordinates for highlighting
-            x_coords_global = np.concatenate([x_c.ravel(), x_b.ravel()])
-            y_coords_global = np.concatenate([y_c.ravel(), y_b.ravel()])
-            z_coords_global = np.concatenate([z_c.ravel(), z_b.ravel()])
+            # Store the coordinates for highlighting and re-click events
+            x_coords_global, y_coords_global, z_coords_global = x_plot, y_plot, z_plot
+        else:
+            x_coords_global, y_coords_global, z_coords_global = None, None, None
 
-        elif lattice_type == "3d_fcc":
-            (x_c, y_c, z_c), (x_f1, y_f1, z_f1), (x_f2, y_f2, z_f2), (x_f3, y_f3, z_f3) = lattice_funcs[lattice_type](nx, ny, nz, a, b, c)
-            x_c, y_c, z_c = rotate_3d(x_c, y_c, z_c, alpha, beta, gamma)
-            x_f1, y_f1, z_f1 = rotate_3d(x_f1, y_f1, z_f1, alpha, beta, gamma)
-            x_f2, y_f2, z_f2 = rotate_3d(x_f2, y_f2, z_f2, alpha, beta, gamma)
-            x_f3, y_f3, z_f3 = rotate_3d(x_f3, y_f3, z_f3, alpha, beta, gamma)
-
-            if same_element:
-                x_list = [x_c, x_f1, x_f2, x_f3]
-                y_list = [y_c, y_f1, y_f2, y_f3]
-                z_list = [z_c, z_f1, z_f2, z_f3]
-                colors = [col1, col1, col1, col1]
-                sizes = [rad1, rad1, rad1, rad1]
-                elements = [e1, e1, e1, e1]
+                # Store the coordinates for highlighting
+           # Store the coordinates for highlighting
+            x_coords_global = x_plot
+            y_coords_global = y_plot
+            if 'z_plot' in locals(): # Check if z_plot exists
+                z_coords_global = z_plot #z_plot
             else:
-                x_list = [x_c, x_f1, x_f2, x_f3]
-                y_list = [y_c, y_f1, y_f2, y_f3]
-                z_list = [z_c, z_f1, z_f2, z_f3]
-                colors = [col1, col2, col2, col2]
-                sizes = [rad1, rad2, rad2, rad2]
-                elements = [e1, e2, e2, e2]
-            plot_3d_lattice(
-                ax, x_list, y_list, z_list,
-                a, b, c,
-                title=f"3D FCC Lattice (nx={nx}, ny={ny}, nz={nz}, α={alpha:.1f}, β={beta:.1f}, γ={gamma:.1f})",
-                colors=colors,
-                marker_sizes=sizes,
-                elements=elements,
-                bond_threshold=bond_threshold
-            )
+                z_coords_global = None
 
-        # Store the coordinates for highlighting
-            x_coords_global = np.concatenate([x_c.ravel(), x_f1.ravel(), x_f2.ravel(), x_f3.ravel()])
-            y_coords_global = np.concatenate([y_c.ravel(), y_f1.ravel(), y_f2.ravel(), y_f3.ravel()])
-            z_coords_global = np.concatenate([z_c.ravel(), z_f1.ravel(), z_f2.ravel(), z_f3.ravel()])
+        # clear highlight and set title/labels then redraw canvas
+        if highlight_artist:
+            highlight_artist.remove()
+            highlight_artist = None
 
-        #clear artist for highlighint to prevent bugs
-            if highlight_artist:
-                highlight_artist.remove()
-                highlight_artist = None
-
-        # Add highlighting for the nearest neighbor
-            if selected_atom > -1: # is there an selected atom?
-                try:
-                    # Use offset from data
-                    x_h, y_h, z_h = x_coords_global[selected_atom], y_coords_global[selected_atom], z_coords_global[selected_atom]
-
-                    # Set radius and render
-                    highlight_radius = 0.2
-                    u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
-                    x_surf = highlight_radius * np.cos(u) * np.sin(v) + x_h
-                    y_surf = highlight_radius * np.sin(u) * np.sin(v) + y_h
-                    z_surf = highlight_radius * np.cos(v) + z_h
-                    highlight_artist = ax.plot_surface(x_surf, y_surf, z_surf, color='yellow', alpha=0.5)
-                except IndexError:
-                    print("Error: Selected atom index out of range.")
-                except AttributeError:
-                    print("Error: No atom has been selected.")
-                except ValueError:
-                    print("Error: Value error")
-            else:
-                    x_coords_global = None
-                    y_coords_global = None
-                    z_coords_global = None
-        # set title/labels and redraw canvas
+        # set title/labels
         ax.set_title(title)
         ax.set_xlabel("X")
         ax.set_ylabel("Y")
-        ax.set_zlabel("Z")
+        if "z_plot" in locals(): # check if Z exists
+            ax.set_zlabel("Z") # check if Z exists
         canvas.draw()
 
     # ==================== UI ELEMENTS ====================
@@ -432,7 +337,7 @@ def main():
     lattice_type_combo.grid(column=1, row=0, sticky=(tk.W, tk.E))
     lattice_type_combo.bind("<<ComboboxSelected>>", lambda event: refresh_plot())
 
-        # Register click event handler
+    # Register click event handler
     canvas.mpl_connect('button_press_event', on_atom_click)
 
     # --------- Crystal System Selection ---------
@@ -523,11 +428,20 @@ def main():
     # --------- Reset Sliders ---------
     reset_button = ttk.Button(frame, text="Reset All", command=reset_sliders)
     reset_button.grid(column=0, row=17, columnspan=2, sticky=(tk.W, tk.E))
-
      # ---------Bond Length slider---------
     ttk.Label(frame, text="Bond Length Threshold:").grid(column=0, row=18, sticky=tk.W)
     bond_length_slider = tk.Scale(frame, from_=0.1, to=5.0, resolution=0.1, orient=tk.HORIZONTAL, variable=bond_length_threshold, command=lambda event: refresh_plot())
     bond_length_slider.grid(column=1, row=18, sticky=(tk.W, tk.E))
+
+    # --------- Vacancy Percentage ---------
+    ttk.Label(frame, text="Vacancy %:").grid(column=0, row=19, sticky=tk.W)
+    vacancy_slider = tk.Scale(frame, from_=0.0, to=100.0, resolution=1.0, orient=tk.HORIZONTAL, variable=vacancy_percentage, command=lambda event: refresh_plot())
+    vacancy_slider.grid(column=1, row=19, sticky=(tk.W, tk.E))
+
+    # --------- Doping Percentage ---------
+    ttk.Label(frame, text="Doping %:").grid(column=0, row=20, sticky=tk.W)
+    doping_slider = tk.Scale(frame, from_=0.0, to=100.0, resolution=1.0, orient=tk.HORIZONTAL, variable=doping_percentage, command=lambda event: refresh_plot())
+    doping_slider.grid(column=1, row=20, sticky=(tk.W, tk.E))
 
     # ---------Canvas and Frame Weight ---------
     canvas.get_tk_widget().grid(row=0, column=1, sticky="nsew")
