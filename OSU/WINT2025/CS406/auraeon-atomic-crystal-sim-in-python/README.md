@@ -2,32 +2,34 @@
 
 ## Overview
 
-The **Auraeon Crystal Lattice Simulator** is a Python-based program designed to generate and visualize 2D and 3D crystal lattices with customizable parameters. **Version v0.3.6** improves UI clarity by fixing **legend positioning** and implementing **3D camera angle preservation**.
+The **Auraeon Crystal Lattice Simulator** is a Python-based program designed to generate and visualize 2D and 3D crystal lattices with customizable parameters. This version (v0.3.7) introduces **bond visualization** and **nearest neighbor highlighting**, adding enhanced interactivity and analytical capabilities to the simulator.
 
 ## Features
 
-### 1. Legend & 3D Camera Enhancements
+### 1. Bond Visualization & Nearest Neighbor Highlighting
 
-- **Legend Placement Fix**:
-  - **Legends are now positioned outside the main plot area**, preventing overlap with atoms.
-  - 2D and 3D legends are **aligned to the right** of the figure.
-- **3D Camera Angle Preservation**:
-  - User-defined **camera angles (elev, azim)** persist between re-plots.
-  - The simulator now remembers custom **zoom, rotation, and elevation adjustments**.
+- **Bond Length Slider**:
+    - Users can adjust the bond threshold dynamically using a slider in the UI.
+
+-   **Bond Rendering:**
+    - Bonds between atoms are computed and drawn based on the user-defined bond length.
+
+-   **Nearest Neighbor Highlighting:**
+    - Clicking on an atom highlights its nearest neighbors within the bond length.
 
 ### 2. Real-Time UI Interactivity
 
-- **Live Plot Updates**:
-  - All changes to sliders (`a, b, c, α, β, γ, nx, ny, nz`), crystal system dropdowns, or color selection **immediately re-render the lattice**.
-- **No Extra Windows**:
-  - The **same figure** is reused for both 2D and 3D, preventing unnecessary windows from opening.
+-   **Live Plot Updates**:
+    -   Changes to sliders, dropdowns, or color selections immediately re-render the lattice.
+
+-   **Single-Window Interface**:
+    -   The same figure is reused for both 2D and 3D plots, preventing unnecessary windows from opening.
 
 ### 3. 2D & 3D Lattice Types
 
-- **2D**: Simple Cubic, Triangular, Hexagonal.
-- **3D**: Simple Cubic, BCC, FCC, Hexagonal.
-- **Multi-Element Configurations**:
-  - Supports distinct element positioning in BCC and FCC.
+-   **2D**: Simple Cubic, Triangular, Hexagonal.
+-   **3D**: Simple Cubic, BCC, FCC, Hexagonal.
+-   **Multi-Element Configurations**: Supports distinct element positioning in BCC and FCC.
 
 ## Installation & Running
 
@@ -64,28 +66,27 @@ Interact with the GUI:
 - Change the crystal system to auto-adjust relationships between lattice parameters.
 ```
 
-## Fixed Bugs in v0.3.6
+## Fixed Bugs in v0.3.7
 
-- **Legend Overlap Eliminated**:
-  - The legend now appears **outside** the main plot area, ensuring no interference with atoms.
-- **Camera Rotation Persistence**:
-  - 3D **camera angles no longer reset** after refreshing the plot.
+*   Addressed an issue where bonds were not displaying correctly with all bond length threshold values.
+*   Corrected issues related to coordinate calculations.
 
 ## Known Issues
 
-1. **Legend Clipping on Small Screens**:
-   - While the legend placement is fixed, very small window sizes may still result in slight clipping.
-2. **3D View Resets on Hard Refresh**:
-   - If the **entire figure window is closed**, camera angles reset to default.
+1.  **3D View Resets on Hard Refresh**:
+
+    *   If the entire figure window is closed, camera angles reset to default.
 
 ## Future Work
 
-- **v0.3.7: Bond Visualization & Nearest Neighbors**.
-- **Vacancy & Doping Simulation**: Randomly remove atoms (vacancies) or replace elements in select sites.
-- **Export to CIF/XYZ**: Save lattice structures for external software.
+*   **v0.3.8: Defects & Doping Simulation**
+    *   Introduce vacancies: Users can define a % of missing atoms.
+    *   Implement atomic substitution: Randomly replace atoms in the lattice.
+
+*   **Export to CIF/XYZ**: Save lattice structures for external software.
 
 ## Contact
 
-- **Name**: Devin Patrick Gaughan
-- **GitHub**: [devin-gaughan](https://github.com/devin-gaughan)
-- **Email**: devin@devingaughan.com
+*   **Name**: Devin Patrick Gaughan
+*   **GitHub**: [devin-gaughan](https://github.com/devin-gaughan)
+*   **Email**: devin@devingaughan.com

@@ -2,99 +2,73 @@ import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 
-# Global references for figures and axes
-fig_2d, ax_2d = None, None
-fig_3d, ax_3d = None, None
+def plot_2d_lattice(ax, x, y, a, b, title="2D Lattice", colors=None, marker_sizes=50, elements="Unknown", bond_threshold=2.0):
+    """Plots a 2D lattice on the given Matplotlib axes."""
+    ax.clear()  # Clear the axes before plotting
 
-# Store user camera angles globally
-camera_elev, camera_azim = 25, 40
+    if colors is None:
+        colors = ['blue'] * len(x) if isinstance(x, list) else 'blue'
 
-def on_mouse_release(event):
-    """Capture 3D camera angles when the user releases the mouse."""
-    global camera_elev, camera_azim
-    if ax_3d is not None and event.inaxes == ax_3d:
-        camera_elev = ax_3d.elev
-        camera_azim = ax_3d.azim
-
-def plot_2d_lattice(x, y, a, b, title="2D Lattice", colors="blue", marker_sizes=50, elements="Unknown"):
-    """Plots a 2D lattice with fixed legend positioning."""
-    global fig_2d, ax_2d
-    
-    if fig_2d is None or not plt.fignum_exists(fig_2d.number):
-        fig_2d, ax_2d = plt.subplots(figsize=(10, 6))  # Increased width
-
-    ax_2d.clear()
-
-    # Multi-element scatter
     if isinstance(x, list) and isinstance(y, list):
-        for i in range(len(x)):
-            s_val = marker_sizes[i] if isinstance(marker_sizes, list) else marker_sizes
-            ax_2d.scatter(np.ravel(x[i]), np.ravel(y[i]), c=colors[i], s=s_val,
-                          label=f"{elements[i]} ({colors[i]})")
+        for i, (x_i, y_i) in enumerate(zip(x, y)):
+            ax.scatter(x_i, y_i, c=colors[i], s=marker_sizes[i], label=f"{elements[i]} ({colors[i]})")
+            draw_2d_bonds(ax, x_i, y_i, bond_threshold)
     else:
-        ax_2d.scatter(np.ravel(x), np.ravel(y), c=colors, s=marker_sizes,
-                      label=f"{elements} ({colors})")
+        ax.scatter(x, y, c=colors, s=marker_sizes, label=f"{elements} ({colors})")
+        draw_2d_bonds(ax, x, y, bond_threshold)
 
-    # Adjust plot limits
-    ax_2d.set_xlim([np.min(x) - a, np.max(x) + a])
-    ax_2d.set_ylim([np.min(y) - b, np.max(y) + b])
+    ax.set_title(title)
+    ax.set_xlabel("X")
+    ax.set_ylabel("Y")
+    ax.legend()
+    plt.tight_layout()
 
-    # Shift the plot to the left to make space for the legend
-    fig_2d.subplots_adjust(right=0.75)  # Reserve space for legend
-    ax_2d.legend(loc="center left", bbox_to_anchor=(1, 0.5))  # Move outside
+def draw_2d_bonds(ax, x, y, bond_threshold):
+    """Draws bonds between atoms in a 2D lattice that are within the bond_threshold distance."""
+    if len(x) == 0 or len(y) == 0:
+        return  # No atoms to bond
 
-    ax_2d.set_title(title)
-    ax_2d.set_xlabel(f"X (Å), a={a:.2f}")
-    ax_2d.set_ylabel(f"Y (Å), b={b:.2f}")
+    coords = np.column_stack((x.ravel(), y.ravel()))
+    dist_mat = np.linalg.norm(coords[:, None] - coords, axis=-1)
 
-    fig_2d.canvas.draw_idle()
-    plt.show(block=False)
+    for i in range(len(coords)):
+        for j in range(i + 1, len(coords)):
+            distance = dist_mat[i, j]
+            if distance <= bond_threshold:
+                ax.plot([coords[i, 0], coords[j, 0]], [coords[i, 1], coords[j, 1]], 'k-', lw=1)
 
-def plot_3d_lattice(x, y, z, a, b, c, title="3D Lattice", colors="blue", marker_sizes=50, elements="Unknown"):
-    """Plots a 3D lattice while preserving the user's camera angles."""
-    global fig_3d, ax_3d, camera_elev, camera_azim
+def plot_3d_lattice(ax, x, y, z, a, b, c, title="3D Lattice", colors=None, marker_sizes=50, elements="Unknown", bond_threshold=2.0):
+    """Plots a 3D lattice on the given Matplotlib 3D axes."""
+    ax.clear()  # Clear the axes before plotting
 
-    if fig_3d is None or not plt.fignum_exists(fig_3d.number):
-        fig_3d = plt.figure(figsize=(10, 6))
-        ax_3d = fig_3d.add_subplot(111, projection='3d')
+    if colors is None:
+        colors = ['blue'] * len(x) if isinstance(x, list) else 'blue'
 
-        # Capture mouse release event to update camera angles
-        fig_3d.canvas.mpl_connect("button_release_event", on_mouse_release)
-
-    ax_3d.clear()
-
-    # Restore the previously stored camera angles
-    ax_3d.view_init(elev=camera_elev, azim=camera_azim)
-
-    # Multi-element scatter
     if isinstance(x, list) and isinstance(y, list) and isinstance(z, list):
-        for i in range(len(x)):
-            s_val = marker_sizes[i] if isinstance(marker_sizes, list) else marker_sizes
-            ax_3d.scatter(np.ravel(x[i]), np.ravel(y[i]), np.ravel(z[i]),
-                          c=colors[i], s=s_val, label=f"{elements[i]} ({colors[i]})")
-
-        x_all = np.concatenate([np.ravel(arr) for arr in x])
-        y_all = np.concatenate([np.ravel(arr) for arr in y])
-        z_all = np.concatenate([np.ravel(arr) for arr in z])
+        for i, (x_i, y_i, z_i) in enumerate(zip(x, y, z)):
+            ax.scatter(x_i, y_i, z_i, c=colors[i], s=marker_sizes[i], label=f"{elements[i]} ({colors[i]})")
+            draw_3d_bonds(ax, x_i, y_i, z_i, bond_threshold)
     else:
-        ax_3d.scatter(np.ravel(x), np.ravel(y), np.ravel(z),
-                      c=colors, s=marker_sizes, label=f"{elements} ({colors})")
+        ax.scatter(x, y, z, c=colors, s=marker_sizes, label=f"{elements} ({colors})")
+        draw_3d_bonds(ax, x, y, z, bond_threshold)
 
-        x_all, y_all, z_all = np.ravel(x), np.ravel(y), np.ravel(z)
+    ax.set_title(title)
+    ax.set_xlabel("X")
+    ax.set_ylabel("Y")
+    ax.set_zlabel("Z")
+    ax.legend()
+    plt.tight_layout()
 
-    # Adjust plot limits
-    ax_3d.set_xlim([np.min(x_all) - a, np.max(x_all) + a])
-    ax_3d.set_ylim([np.min(y_all) - b, np.max(y_all) + b])
-    ax_3d.set_zlim([np.min(z_all) - c, np.max(z_all) + c])
+def draw_3d_bonds(ax, x, y, z, bond_threshold):
+    """Draws bonds between atoms in a 3D lattice that are within the bond_threshold distance."""
+    if len(x) == 0 or len(y) == 0 or len(z) == 0:
+        return  # No atoms to bond
 
-    # Adjust layout to fit legend
-    fig_3d.subplots_adjust(right=0.75)
-    ax_3d.legend(loc="center left", bbox_to_anchor=(1, 0.5))  # Move legend outside
+    coords = np.column_stack((x.ravel(), y.ravel(), z.ravel()))
+    dist_mat = np.linalg.norm(coords[:, None] - coords, axis=-1)
 
-    ax_3d.set_title(title)
-    ax_3d.set_xlabel(f"X (Å), a={a:.2f}")
-    ax_3d.set_ylabel(f"Y (Å), b={b:.2f}")
-    ax_3d.set_zlabel(f"Z (Å), c={c:.2f}")
-
-    fig_3d.canvas.draw_idle()
-    plt.show(block=False)
+    for i in range(len(coords)):
+        for j in range(i + 1, len(coords)):
+            distance = dist_mat[i, j]
+            if distance <= bond_threshold:
+                ax.plot([coords[i, 0], coords[j, 0]], [coords[i, 1], coords[j, 1]], [coords[i, 2], coords[j, 2]], 'k-', lw=1)
